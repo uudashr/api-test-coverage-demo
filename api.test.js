@@ -32,10 +32,10 @@ axios = oklizeAxios(axios);
 test('Before', async (t) => {
     const api = await SwaggerParser.validate('openapi.yml')
     for (const [path, operations] of Object.entries(api.paths)) {
-        console.log(`Path ${path}`);
+        // console.log(`Path ${path}`);
         for (const [method, operation] of Object.entries(operations)) {
-            console.log(`- Method "${method}", operationId: ${operation.operationId}`)
-            console.log(`-- ${Object.keys(operation.responses)}`);
+            // console.log(`- Method "${method}", operationId: ${operation.operationId}`)
+            // console.log(`-- ${Object.keys(operation.responses)}`);
             for (status of Object.keys(operation.responses)) {
                 const key = `${path}:${method}:${status}`;
                 coverage.set(key, 0);
