@@ -8,22 +8,89 @@ let coverage = new Map();
 
 let requestLogs = [];
 function oklizeAxios(instance) {
-    fn = instance.get;
-    instance.get = (url, config) => {
-        
-
-        const p = fn(url, config);
-        return p.then((res) => {
-            requestLogs.push({
-                method: "get",
-                url: url,
-                status: res.status.toString(),
-                timestamp: new Date(),
+    // request
+    {
+        const fn = instance.request;
+        instance.request = (config) => {
+            const p = fn(config);
+            return p.then((res) => {
+                requestLogs.push({
+                    method: config.method,
+                    url: config.url,
+                    status: res.status.toString(),
+                    timestamp: new Date(),
+                });
+                return res;
+            }).catch((err) => {
+                if (err.response) {
+                    const res = err.response;
+                    requestLogs.push({
+                        method: config.method,
+                        url: url,
+                        status: res.status.toString(),
+                        timestamp: new Date(),
+                    });
+                }
+                return Promise.reject(err);
             });
-            return res;
-        })
-    };
-    return instance
+        };
+    }
+
+    ['get', 'delete', 'head', 'options'].forEach((method) => {
+        const fn = instance[method];
+        instance[method] = (url, config) => {
+            const p = fn(url, config);
+            return p.then((res) => {
+                requestLogs.push({
+                    method: method,
+                    url: url,
+                    status: res.status.toString(),
+                    timestamp: new Date(),
+                });
+                return res;
+            }).catch((err) => {
+                if (err.response) {
+                    const res = err.response;
+                    requestLogs.push({
+                        method: method,
+                        url: url,
+                        status: res.status.toString(),
+                        timestamp: new Date(),
+                    });
+                }
+                return Promise.reject(err);
+            });
+        };
+    });
+
+    ['post', 'put', 'patch'].forEach((method) => {
+        const fn = instance[method];
+        instance[method] = (url, data, config) => {
+            const p = fn(url, data, config);
+            return p.then((res) => {
+                requestLogs.push({
+                    method: method,
+                    url: url,
+                    status: res.status.toString(),
+                    timestamp: new Date(),
+                });
+                return res;
+            }).catch((err) => {
+                if (err.response) {
+                    const res = err.response;
+                    requestLogs.push({
+                        method: method,
+                        url: url,
+                        status: res.status.toString(),
+                        timestamp: new Date(),
+                    });
+                }
+                return Promise.reject(err);
+            });
+        };
+    });
+
+    return instance;
 }
 
 axios = oklizeAxios(axios);
@@ -47,7 +114,9 @@ test('Before', async (t) => {
 test('Retrieve all cuits', async (t) => {
     // Cover path: "get /cuits"
     const res = await axios.get('/cuits', {
-        headers: { 'Accept': 'application/json' }
+        headers: {
+            'Authorization': 'ScreenName nuruddin.ashr'
+        }
     });
 
     // Cover the response "200"
