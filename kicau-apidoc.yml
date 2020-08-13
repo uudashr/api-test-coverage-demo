@@ -1,0 +1,137 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Kicau OpenAPI
+  description: Kicau API which enable third party interact with Kicau.
+servers:
+  - url: https://{environment}.kicau.io/v1
+    description: Deployment server
+    variables:
+      environment:
+        default: api
+        enum:
+          - api           # Production server
+          - api.staging   # Staging server
+          - api.dev       # Development server
+  - url: http://localhost:3000
+    description: Local development server
+paths:
+  /cuits:
+    get:
+      summary: List all cuits
+      operationId: listCuits
+      tags:
+        - cuits
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 10
+            minimum: 1
+            maximum: 100
+          description: Maximum items returned
+          example: 20
+        - name: sinceId
+          in: query
+          schema:
+            type: integer
+            format: int64
+          description: Retrieve starting point
+          example: 1087
+      responses:
+        '200':
+          description: List of cuits
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Cuits"
+    post:
+      summary: Submit new cuit
+      operationId: submitCuit
+      tags:
+        - cuits
+      requestBody:
+        description: New cuit content
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCuit"
+      responses:
+        '201':
+          description: Successfully submittted
+        '400':
+          description: Unacceptable content (validation error)
+        '409':
+          description: Duplicate cuit
+  /cuits/{cuitId}:
+    get:
+      summary: Default of specific cuit
+      operationId: cuitDetails
+      tags:
+        - cuits
+      parameters:
+        - name: cuitId
+          in: path
+          required: true
+          description: The id of cuit to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: The cuit details
+          content:
+            application/json:
+              schema:
+                $ref:  "#/components/schemas/Cuit"
+        '404':
+          description: Cuit not found
+              
+components:
+  schemas:
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 88726
+        name:
+          type: string
+          example: John Smith
+        screenName:
+          type: string
+          example: john.smith
+      required:
+        - id
+        - name
+    NewCuit:
+      type: object
+      properties:
+        text:
+          type: string
+          example: Let's do it
+      required:
+        - text
+    Cuit:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1093
+        author:
+          $ref: "#/components/schemas/Author"
+        text:
+          type: string
+          example: What a beautiful morning
+      required:
+        - id
+        - text
+    Cuits:
+      type: array
+      items:
+        $ref: "#/components/schemas/Cuit"

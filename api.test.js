@@ -30,7 +30,7 @@ axios = oklizeAxios(axios);
 
 
 test('Before', async (t) => {
-    const api = await SwaggerParser.validate('openapi.yml')
+    const api = await SwaggerParser.validate('kicau-apidoc.yml')
     for (const [path, operations] of Object.entries(api.paths)) {
         // console.log(`Path ${path}`);
         for (const [method, operation] of Object.entries(operations)) {
