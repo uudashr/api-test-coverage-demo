@@ -1,0 +1,21 @@
+{
+  "name": "api-test-coverage-demo",
+  "version": "1.0.0",
+  "description": "API test coverage demo",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape *.test.js"
+  },
+  "author": "Nuruddin Ashr",
+  "license": "ISC",
+  "devDependencies": {
+    "@apidevtools/swagger-parser": "^10.0.1",
+    "axios": "^0.19.2",
+    "tape": "^5.0.1"
+  },
+  "homepage": "https://github.com/uudashr/api-test-coverage-demo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uudashr/api-test-coverage-demo.git"
+  }
+}
